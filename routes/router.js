@@ -1,31 +1,29 @@
 const nodemailer = require('nodemailer');
-const router = require('express').Router(); 
+const router = require('express').Router();
+require('dotenv').config(); // Load environment variables from .env file
 
 router.post('/register', async (req, res) => {
-  const { recipientEmail, subject, message,message2 } = req.body;
+  const { recipientEmail, subject, message, message2 } = req.body;
 
-  console.log('EMAIL: hamzaasadabcd@gmail.com');
-  console.log('PASSWORD: rqws wlbe txgd iiec');
-  
-
+  // Create a transporter using the environment variables
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: "hamzaasadabcd@gmail.com" , // Your Gmail address
-        pass: "rqws wlbe txgd iiec" 
+      user: process.env.EMAIL_USER, // Your Gmail address from .env
+      pass: process.env.EMAIL_PASS, // Your Gmail password from .env
     },
   });
 
   const mailOptions = {
-    from: "hamzaasadabcd@gmail.com",
+    from: process.env.EMAIL_USER, // Use the email from environment
     to: recipientEmail,
     subject: subject,
     text: message,
   };
 
   const mailOptionsToSender = {
-    from: "hamzaasadabcd@gmail.com",
-    to: "hamzaasadabcd@gmail.com",
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER, // Email to yourself
     subject: "Order Received",
     text: `${message2}`,
   };
@@ -34,7 +32,7 @@ router.post('/register', async (req, res) => {
     // Send the email to the recipient
     await transporter.sendMail(mailOptions);
 
-    // Send the confirmation email to the sender
+    // Send the confirmation email to yourself
     await transporter.sendMail(mailOptionsToSender);
 
     res.status(200).json({ message: 'Emails sent successfully' });
